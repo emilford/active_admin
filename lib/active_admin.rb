@@ -1,6 +1,5 @@
 require 'meta_search'
 require 'bourbon'
-require 'devise'
 require 'kaminari'
 require 'formtastic'
 require 'sass'
@@ -23,7 +22,6 @@ module ActiveAdmin
   autoload :Dashboards,               'active_admin/dashboards'
   autoload :DependencyChecker,        'active_admin/dependency_checker'
   autoload :Deprecation,              'active_admin/deprecation'
-  autoload :Devise,                   'active_admin/devise'
   autoload :DSL,                      'active_admin/dsl'
   autoload :Event,                    'active_admin/event'
   autoload :FormBuilder,              'active_admin/form_builder'
@@ -83,6 +81,10 @@ module ActiveAdmin
       DependencyChecker.rails_3_1? && Rails.application.config.try(:assets).try(:enabled)
     end
 
+    def use_devise?
+      Gem.loaded_specs.keys.include?('devise')
+    end
+
     # Migration MoveAdminNotesToComments generated with version 0.2.2 might reference
     # to ActiveAdmin.default_namespace.
     delegate :default_namespace, :to => :application
@@ -96,3 +98,8 @@ end
 ActiveAdmin::DependencyChecker.check!
 
 require 'active_admin/comments'
+
+if ActiveAdmin.use_devise?
+  require 'devise'
+  autoload :Devise, 'active_admin/devise'
+end
